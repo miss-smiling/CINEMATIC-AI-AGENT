@@ -1,0 +1,36 @@
+# Environment variables — never commit real keys
+.env
+.env.local
+ 
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+ 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+ 
+# OS files
+.DS_Store
+Thumbs.db
+ 
+# Editor
+.vscode/
+.idea/
+ 
+# Build output
+dist/
+build/
+.next/
+ 
+# Logs
+*.log
+ 
+# Google Cloud
+*.json.key
+service-account*.json
+ 
