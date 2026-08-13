@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character, LocationAsset, PropAsset, StoryboardShot } from '../types';
-import { Users, MapPin, Box, Tag, Plus, UserPlus } from 'lucide-react';
+import { Users, MapPin, Box, Tag, Plus, UserPlus, Trash2, X } from 'lucide-react';
 
 interface AssetsViewProps {
   characters: Character[];
@@ -9,6 +9,9 @@ interface AssetsViewProps {
   shots: StoryboardShot[];
   onAddCharacterToken: (charId: string, token: string) => void;
   onOpenAddModal: (type: 'character' | 'location' | 'prop') => void;
+  onDeleteCharacter?: (charId: string) => void;
+  onDeleteLocation?: (locId: string) => void;
+  onDeleteProp?: (propId: string) => void;
 }
 
 export const AssetsView: React.FC<AssetsViewProps> = ({
@@ -18,9 +21,17 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
   shots,
   onAddCharacterToken,
   onOpenAddModal,
+  onDeleteCharacter,
+  onDeleteLocation,
+  onDeleteProp,
 }) => {
   const [activeTab, setActiveTab] = useState<'characters' | 'locations' | 'props'>('characters');
   const [newTokenText, setNewTokenText] = useState<{ [key: string]: string }>({});
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+    type: 'character' | 'location' | 'prop';
+  } | null>(null);
 
   const handleAddTokenSubmit = (charId: string, e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +39,18 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
     if (!token) return;
     onAddCharacterToken(charId, token);
     setNewTokenText((prev) => ({ ...prev, [charId]: '' }));
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.type === 'character' && onDeleteCharacter) {
+      onDeleteCharacter(deleteTarget.id);
+    } else if (deleteTarget.type === 'location' && onDeleteLocation) {
+      onDeleteLocation(deleteTarget.id);
+    } else if (deleteTarget.type === 'prop' && onDeleteProp) {
+      onDeleteProp(deleteTarget.id);
+    }
+    setDeleteTarget(null);
   };
 
   return (
@@ -116,7 +139,7 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
               return (
                 <div
                   key={char.id}
-                  className="bg-[#232325] p-4 rounded-lg space-y-4 border border-[#2E2E30]"
+                  className="bg-[#232325] p-4 rounded-lg space-y-4 border border-[#2E2E30] relative group"
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
@@ -143,9 +166,20 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-xs font-mono font-bold text-[#B8945F]">{charShotsCount} Shots</span>
-                      <p className="text-[10px] text-[#8A8A8E]">{char.consistencyRate}% Health</p>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <span className="text-xs font-mono font-bold text-[#B8945F]">{charShotsCount} Shots</span>
+                        <p className="text-[10px] text-[#8A8A8E]">{char.consistencyRate}% Health</p>
+                      </div>
+                      {onDeleteCharacter && (
+                        <button
+                          onClick={() => setDeleteTarget({ id: char.id, name: char.name, type: 'character' })}
+                          className="p-1.5 rounded text-[#8A8A8E] hover:text-[#C9756B] hover:bg-[#1C1C1E] border border-transparent hover:border-[#C9756B]/30 transition-colors cursor-pointer"
+                          title={`Delete ${char.name}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -230,9 +264,18 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {locations.map((loc) => (
-              <div key={loc.id} className="bg-[#232325] p-4 rounded-lg space-y-3 border border-[#2E2E30]">
-                <div className="aspect-video w-full rounded overflow-hidden border border-[#2E2E30]">
+              <div key={loc.id} className="bg-[#232325] p-4 rounded-lg space-y-3 border border-[#2E2E30] relative group">
+                <div className="aspect-video w-full rounded overflow-hidden border border-[#2E2E30] relative">
                   <img src={loc.imageUrl} alt={loc.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  {onDeleteLocation && (
+                    <button
+                      onClick={() => setDeleteTarget({ id: loc.id, name: loc.name, type: 'location' })}
+                      className="absolute top-2 right-2 p-1.5 rounded bg-[#1C1C1E]/90 text-[#8A8A8E] hover:text-[#C9756B] border border-[#2E2E30] hover:border-[#C9756B]/50 transition-colors cursor-pointer"
+                      title={`Delete ${loc.name}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
 
                 <div>
@@ -274,9 +317,18 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {propsList.map((prop) => (
-              <div key={prop.id} className="bg-[#232325] p-4 rounded-lg space-y-3 border border-[#2E2E30]">
-                <div className="aspect-square w-full rounded overflow-hidden border border-[#2E2E30]">
+              <div key={prop.id} className="bg-[#232325] p-4 rounded-lg space-y-3 border border-[#2E2E30] relative group">
+                <div className="aspect-square w-full rounded overflow-hidden border border-[#2E2E30] relative">
                   <img src={prop.imageUrl} alt={prop.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  {onDeleteProp && (
+                    <button
+                      onClick={() => setDeleteTarget({ id: prop.id, name: prop.name, type: 'prop' })}
+                      className="absolute top-2 right-2 p-1.5 rounded bg-[#1C1C1E]/90 text-[#8A8A8E] hover:text-[#C9756B] border border-[#2E2E30] hover:border-[#C9756B]/50 transition-colors cursor-pointer"
+                      title={`Delete ${prop.name}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
 
                 <div>
@@ -288,6 +340,54 @@ export const AssetsView: React.FC<AssetsViewProps> = ({
             ))}
           </div>
         )
+      )}
+
+      {/* Delete Confirmation Modal Dialog */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1C1E]/80 animate-fade-in">
+          <div className="bg-[#232325] border border-[#2E2E30] w-full max-w-sm p-5 rounded-lg space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-[#2E2E30]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded bg-[#C9756B]/20 text-[#C9756B] border border-[#C9756B]/40 flex items-center justify-center shrink-0">
+                  <Trash2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-[#EDEAE3]">
+                    Delete {deleteTarget.type === 'character' ? 'Character' : deleteTarget.type === 'location' ? 'Location' : 'Prop'}?
+                  </h3>
+                  <p className="text-[11px] text-[#8A8A8E]">Permanent removal from project</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="p-1 rounded text-[#8A8A8E] hover:text-[#EDEAE3] hover:bg-[#2A2A2C]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-[#EDEAE3] bg-[#1C1C1E] p-3 rounded border border-[#2E2E30] leading-relaxed">
+              Are you sure you want to remove <span className="font-semibold text-[#B8945F]">"{deleteTarget.name}"</span>? Storyboard shots referencing this asset will remain intact.
+            </p>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2E2E30]">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="px-3.5 py-1.5 rounded text-xs font-medium text-[#8A8A8E] hover:text-[#EDEAE3] bg-[#1C1C1E] border border-[#2E2E30] transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="px-3.5 py-1.5 rounded text-xs font-semibold bg-[#C9756B] hover:bg-[#D8857B] text-[#EDEAE3] transition-colors cursor-pointer"
+              >
+                Delete Asset
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
