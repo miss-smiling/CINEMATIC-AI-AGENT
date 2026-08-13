@@ -1,0 +1,6 @@
+{
+  "name": "Continuum",
+  "description": "Professional film production tool for tracking visual consistency across AI-generated storyboard characters, locations, and props.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
