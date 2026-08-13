@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #1C1C1E;
+  --bg-panel: #232325;
+  --bg-elevated: #2A2A2C;
+  --border-color: #2E2E30;
+  --text-primary: #EDEAE3;
+  --text-muted: #8A8A8E;
+  
+  --accent-gold: #B8945F;
+  --status-consistent: #7A9E8C;
+  --status-flagged: #C9756B;
+  --status-warning: #C9A24B;
+}
+
+@layer base {
+  body {
+    background-color: #1C1C1E;
+    color: #EDEAE3;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Flat Premiere Pro-style Surfaces */
+.bg-studio-canvas {
+  background-color: #1C1C1E;
+}
+
+.glass-panel {
+  background-color: #232325;
+  border-color: #2E2E30;
+}
+
+.glass-panel-hover:hover {
+  background-color: #2A2A2C;
+  border-color: #3E3E42;
+}
+
+.glass-card {
+  background-color: #232325;
+  border: 1px solid #2E2E30;
+}
+
+.glass-input {
+  background-color: #1C1C1E;
+  border: 1px solid #2E2E30;
+  color: #EDEAE3;
+  transition: border-color 0.15s ease;
+}
+
+.glass-input:focus {
+  border-color: #B8945F;
+  outline: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1C1C1E;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2E2E30;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8A8A8E;
+}
+
+/* Waveform pulse animation */
+@keyframes waveformPulse {
+  0%, 100% {
+    transform: scaleY(0.3);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.animate-waveform {
+  animation: waveformPulse 1.4s ease-in-out infinite;
+}
