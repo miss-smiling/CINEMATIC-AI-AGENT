@@ -78,6 +78,32 @@ export default function App() {
     setPropsList((prev) => [...prev, newProp]);
   };
 
+  // Asset deletion handlers
+  const handleDeleteCharacter = (charId: string) => {
+    setCharacters((prev) => prev.filter((c) => c.id !== charId));
+    if (selectedCharacterFilter === charId) {
+      setSelectedCharacterFilter(null);
+    }
+  };
+
+  const handleDeleteLocation = (locId: string) => {
+    setLocations((prev) => prev.filter((l) => l.id !== locId));
+    if (selectedLocationFilter === locId) {
+      setSelectedLocationFilter(null);
+    }
+  };
+
+  const handleDeleteProp = (propId: string) => {
+    setPropsList((prev) => prev.filter((p) => p.id !== propId));
+  };
+
+  const handleDeleteShot = (shotId: string) => {
+    setShots((prev) => prev.filter((s) => s.id !== shotId));
+    if (selectedShot?.id === shotId) {
+      setSelectedShot(null);
+    }
+  };
+
   // Toggle checklist item and update shot score live
   const handleUpdateShotChecklist = (shotId: string, newChecklist: ChecklistItems) => {
     const countTrue = Object.values(newChecklist).filter(Boolean).length;
@@ -332,6 +358,9 @@ export default function App() {
               shots={shots}
               onAddCharacterToken={handleAddCharacterToken}
               onOpenAddModal={handleOpenAddModal}
+              onDeleteCharacter={handleDeleteCharacter}
+              onDeleteLocation={handleDeleteLocation}
+              onDeleteProp={handleDeleteProp}
             />
           )}
 
@@ -351,6 +380,7 @@ export default function App() {
             onUpdateShotChecklist={handleUpdateShotChecklist}
             onCycleStatus={() => handleCycleShotStatus(selectedShot.id)}
             onAddNote={handleAddNote}
+            onDeleteShot={handleDeleteShot}
           />
         )}
       </div>
