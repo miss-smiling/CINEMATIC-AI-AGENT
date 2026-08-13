@@ -18,6 +18,7 @@ import {
   MessageSquare,
   FileText,
   Sliders,
+  Trash2,
 } from 'lucide-react';
 
 interface ShotDetailPanelProps {
@@ -29,6 +30,7 @@ interface ShotDetailPanelProps {
   onUpdateShotChecklist: (shotId: string, newChecklist: ChecklistItems) => void;
   onCycleStatus?: () => void;
   onAddNote: (shotId: string, noteText: string) => void;
+  onDeleteShot?: (shotId: string) => void;
 }
 
 export const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({
@@ -40,10 +42,13 @@ export const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({
   onUpdateShotChecklist,
   onCycleStatus,
   onAddNote,
+  onDeleteShot,
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'consistency' | 'assets' | 'notes' | 'metadata'>('overview');
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [newNoteText, setNewNoteText] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [reGenStatus, setReGenStatus] = useState<string | null>(null);
 
   // Lock body scroll when panel is open
   useEffect(() => {
@@ -123,6 +128,15 @@ export const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({
 
           <div className="flex items-center gap-2">
             <StatusChip status={shot.status} score={shot.consistencyScore} size="sm" onClick={onCycleStatus} />
+            {onDeleteShot && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="p-1.5 rounded text-[#8A8A8E] hover:text-[#C9756B] hover:bg-[#2A2A2C] transition-colors cursor-pointer"
+                title="Delete Shot"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={onClose}
               className="p-1.5 rounded text-[#8A8A8E] hover:text-[#EDEAE3] hover:bg-[#2A2A2C] transition-colors cursor-pointer"
@@ -132,6 +146,58 @@ export const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Delete Confirmation Modal for Shot */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1C1E]/80 animate-fade-in">
+            <div className="bg-[#232325] border border-[#2E2E30] w-full max-w-sm p-5 rounded-lg space-y-4 shadow-2xl">
+              <div className="flex items-center justify-between pb-2 border-b border-[#2E2E30]">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded bg-[#C9756B]/20 text-[#C9756B] border border-[#C9756B]/40 flex items-center justify-center shrink-0">
+                    <Trash2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[#EDEAE3]">Delete Shot {shot.shotNumber}?</h3>
+                    <p className="text-[11px] text-[#8A8A8E]">Permanent removal from sequence</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="p-1 rounded text-[#8A8A8E] hover:text-[#EDEAE3] hover:bg-[#2A2A2C]"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-[#EDEAE3] bg-[#1C1C1E] p-3 rounded border border-[#2E2E30] leading-relaxed">
+                Are you sure you want to remove shot <span className="font-semibold text-[#B8945F]">"{shot.title}"</span> ({shot.shotNumber}) from the storyboard sequence?
+              </p>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#2E2E30]">
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-3.5 py-1.5 rounded text-xs font-medium text-[#8A8A8E] hover:text-[#EDEAE3] bg-[#1C1C1E] border border-[#2E2E30] transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (onDeleteShot) {
+                      onDeleteShot(shot.id);
+                    }
+                    setShowDeleteConfirm(false);
+                    onClose();
+                  }}
+                  className="px-3.5 py-1.5 rounded text-xs font-semibold bg-[#C9756B] hover:bg-[#D8857B] text-[#EDEAE3] transition-colors cursor-pointer"
+                >
+                  Delete Shot
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Independent Scroll Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -573,8 +639,14 @@ export const ShotDetailPanel: React.FC<ShotDetailPanelProps> = ({
                 <p className="text-xs font-mono text-[#EDEAE3]">{shot.cameraSettings.movement}</p>
               </div>
 
+              {reGenStatus && (
+                <div className="p-3 rounded bg-[#7A9E8C]/20 border border-[#7A9E8C]/40 text-[#7A9E8C] text-xs font-mono">
+                  ✓ {reGenStatus}
+                </div>
+              )}
+
               <button
-                onClick={() => alert(`Submitted re-generation job for ${shot.shotNumber} with seed lock ${shot.seed}`)}
+                onClick={() => setReGenStatus(`Submitted re-generation job for ${shot.shotNumber} with seed lock ${shot.seed}`)}
                 className="w-full py-2.5 rounded bg-[#2A2A2C] hover:bg-[#323235] text-[#EDEAE3] border border-[#2E2E30] font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <RefreshCw className="w-4 h-4 text-[#8A8A8E]" />
