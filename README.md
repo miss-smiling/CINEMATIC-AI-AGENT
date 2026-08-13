@@ -1,95 +1,47 @@
-Continuum — Frontend
+CONTINUUM — FRONTEND
 
 The interface for reviewing AI-generated storyboard shots and tracking visual consistency of characters, locations, and props across a sequence.
 
-Stack
-React + TypeScript
-Vite
-Tailwind (core utility classes)
-Getting Started
-bash
-cd frontend
-npm install
-cp .env.example .env   # fill in real values
-npm run dev
+STACK
 
-App runs locally at http://localhost:5173 (or whatever port Vite assigns).
+Built with React and TypeScript, using Vite as the build tool and Tailwind for styling with core utility classes.
 
-Project Structure
-src/
-├── components/
-│   ├── Navbar.tsx
-│   ├── Sidebar.tsx
-│   ├── ShotGrid.tsx
-│   ├── ShotCard.tsx
-│   ├── ShotDetail.tsx
-│   ├── AssetsView.tsx
-│   ├── AddAsset.tsx
-│   ├── ConsistencyChart.tsx  (or similar — check exact names in repo)
-│   ├── StatusChip.tsx
-│   ├── Waveform.tsx
-│   └── Settings.tsx
-├── data/
-│   └── mockData.ts       — placeholder data only, not real assets
-├── App.tsx
-├── main.tsx
-├── index.css
-└── types.ts
-Design System
+GETTING STARTED
 
-Full token reference lives in /docs/design_tokens.md at the repo root. Quick reference:
+Navigate into the frontend folder, run npm install to install dependencies, copy .env.example to .env and fill in real values, then run npm run dev to start the local development server. The app will run locally, typically at http://localhost:5173 depending on the port Vite assigns.
 
-Backgrounds
+PROJECT STRUCTURE
 
-Token	Hex	Use
-Base	
-#1C1C1E	Main app background
-Panel	
-#232325	Cards, sidebar
-Elevated	
-#2A2A2C	Hover state
-Border	
-#2E2E30	Dividers
+The source code lives in the src folder. Inside components, you will find Navbar.tsx, Sidebar.tsx, ShotGrid.tsx, ShotCard.tsx, ShotDetail.tsx, AssetsView.tsx, AddAsset.tsx, the consistency chart component, StatusChip.tsx, Waveform.tsx, and Settings.tsx. The data folder contains mockData.ts, which holds placeholder data only, not real assets. At the top level of src you will also find App.tsx, main.tsx, index.css, and types.ts.
 
-Text
+DESIGN SYSTEM
 
-Token	Hex	Use
-Primary	
-#EDEAE3	Main text
-Muted	
-#8A8A8E	Secondary/labels
+The full token reference lives in docs/design_tokens.md at the repo root. For backgrounds, the base app background is 
+#1C1C1E, panel and sidebar backgrounds use 
+#232325, hover states use 
+#2A2A2C, and borders and dividers use 
+#2E2E30. For text, primary text uses 
+#EDEAE3 and secondary or muted text uses 
+#8A8A8E. Status accent colors are used only when meaningful, never decoratively. The active or primary accent, used for the selected navigation item or primary actions, is 
+#B8945F. Consistent status uses 
+#7A9E8C. Flagged or inconsistent status uses 
+#C9756B. Needs review or warning status uses 
+#C9A24B.
 
-Status accents (used only when meaningful, never decoratively)
+There should be no gradients, no glow effects, and only flat matte surfaces throughout the interface. Only one accent color should be visible in the top navigation at any time, reserved for the currently active tab. Character, location, and prop chips should each receive their own individual muted color, using desaturated tones such as terracotta, ochre, dusty rose, or sage, rather than bright or saturated colors.
 
-Status	Hex	Meaning
-Active/primary	
-#B8945F	Selected nav item, primary action
-Consistent	
-#7A9E8C	Shot passes consistency check
-Flagged	
-#C9756B	Inconsistency detected
-Needs review	
-#C9A24B	Borderline / warning
+DATA
 
-Rules
+The mockData.ts file holds placeholder shots, characters, locations, and props used for local development. Real data will eventually come from the ClickHouse-backed API once the backend is live. When that happens, swap the mock data import for a real fetch call, while keeping the same shape defined in types.ts so existing components do not break.
 
-No gradients, no glow effects, matte surfaces only
-Only one accent color visible in the top nav at a time (the active tab)
-Character/location/prop chips get individual muted colors — desaturated tones (terracotta, ochre, dusty rose, sage), never bright/saturated
-Data
+EMPTY STATES
 
-src/data/mockData.ts holds placeholder shots, characters, locations, and props for local development. Real data will come from the ClickHouse-backed API once the backend is live — swap the mock import for a real fetch when that's ready, keep the same shape/types (types.ts) to avoid breaking components.
+Character, location, and prop lists should render as genuine empty states, with no invented names or placeholder people, until a user actually adds one through the Add Character, Add Location, or Add Prop flow.
 
-Empty States
+KNOWN ISSUES AND OPEN ITEMS
 
-Character, location, and prop lists should render as genuine empty states (no invented names or placeholder people) until a user actually adds one via the "Add Character / Location / Prop" flow.
+The scroll behavior of the shot detail panel still needs to be confirmed, so that the background does not scroll while the panel is open. Real image upload for the Add Character, Add Location, and Add Prop forms still needs to be wired up. The frontend still needs to be connected to the live ClickHouse-backed API once the backend is ready. Component filenames should also be double checked against the structure described above, since some names appeared truncated in an earlier file tree view.
 
-Known Issues / To Do
- Confirm scroll lock on the shot detail panel (background should not scroll while panel is open)
- Wire up real image upload for Add Character/Location/Prop forms
- Connect to live ClickHouse-backed API once backend is ready
- Verify component filenames match structure above (some were truncated in earlier file tree view)
-Related
-Main repo README: /README.md
-Design tokens: /docs/design_tokens.md
-Data schema: /data/schema.sql
+RELATED DOCUMENTS
+
+The main repository README is located at the root of the repo. Design tokens are documented in docs/design_tokens.md. The data schema is defined in data/schema.sql.
