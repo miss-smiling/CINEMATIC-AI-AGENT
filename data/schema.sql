@@ -1,44 +1,63 @@
--- Draft schema for shared memory (ClickHouse)
--- Owner: Member 2 — refine during Week 1
+-- Shared memory schema for Agentic Cinema
+-- Owner: Member 2 - Data Layer / ClickHouse
+-- Stores entities, shots, state changes, and continuity drift.
 
-CREATE TABLE IF NOT EXISTS characters (
+CREATE TABLE IF NOT EXISTS entities (
     id String,
+    entity_type LowCardinality(String),
     name String,
     canonical_description String,
     reference_image_url String,
-    current_state String,      -- e.g. "torn jacket after scene 4"
-    updated_at DateTime DEFAULT now()
-) ENGINE = MergeTree()
-ORDER BY id;
-
-CREATE TABLE IF NOT EXISTS locations (
-    id String,
-    name String,
-    canonical_description String,
-    current_state String,      -- e.g. lighting/time-of-day changes
-    updated_at DateTime DEFAULT now()
-) ENGINE = MergeTree()
-ORDER BY id;
-
-CREATE TABLE IF NOT EXISTS props (
-    id String,
-    name String,
-    canonical_description String,
     current_state String,
     updated_at DateTime DEFAULT now()
-) ENGINE = MergeTree()
+)
+ENGINE = MergeTree()
 ORDER BY id;
+
 
 CREATE TABLE IF NOT EXISTS shots (
     id String,
     scene_id String,
     shot_number UInt32,
-    character_ids Array(String),
-    location_id String,
-    prop_ids Array(String),
+    description String,
     generated_image_url String,
-    drift_score Float32,        -- filled in by Continuity Checker
-    flagged Bool DEFAULT false,
+    status LowCardinality(String) DEFAULT 'planned',
     created_at DateTime DEFAULT now()
-) ENGINE = MergeTree()
+)
+ENGINE = MergeTree()
 ORDER BY (scene_id, shot_number);
+
+
+CREATE TABLE IF NOT EXISTS shot_entities (
+    shot_id String,
+    entity_id String,
+    role LowCardinality(String),
+    created_at DateTime DEFAULT now()
+)
+ENGINE = MergeTree()
+ORDER BY (shot_id, entity_id);
+
+
+CREATE TABLE IF NOT EXISTS state_history (
+    entity_id String,
+    shot_id String,
+    previous_state String,
+    new_state String,
+    reason String,
+    created_at DateTime DEFAULT now()
+)
+ENGINE = MergeTree()
+ORDER BY (entity_id, created_at);
+
+
+CREATE TABLE IF NOT EXISTS drift_history (
+    shot_id String,
+    entity_id String,
+    expected_state String,
+    detected_state String,
+    drift_score Float32,
+    reason String,
+    created_at DateTime DEFAULT now()
+)
+ENGINE = MergeTree()
+ORDER BY (shot_id, entity_id, created_at);
