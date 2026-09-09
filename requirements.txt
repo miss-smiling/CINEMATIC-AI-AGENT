@@ -1,0 +1,28 @@
+# ── Hackathon Phase 1: Core Frameworks ──────────────────────────
+# Source: Gemini Enterprise Agent Platform SDK for Python
+# https://github.com/googleapis/python-genai
+google-generativeai>=0.8.0
+
+# Source: Agent Engine Getting Started (ADK)
+# https://github.com/GoogleCloudPlatform/generative-ai/.../intro_agent_engine.ipynb
+google-cloud-aiplatform[agent_engines,adk]>=1.101.0
+
+# ── Hackathon Phase 2: Document Processing ───────────────────────
+# Source: Document & PDF Analysis guide
+pypdf>=4.0.0
+
+# ── Hackathon Phase 4: Reasoning & State ────────────────────────
+# ADK already pulled above via google-cloud-aiplatform[adk]
+# mcp-clickhouse is installed separately as an npx tool (see README)
+
+# ── Hackathon Phase 5: Deploy & Safety ──────────────────────────
+google-cloud-secret-manager>=2.16.0
+
+# ── Data & Validation ───────────────────────────────────────────
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+
+# ── Dev / Test ───────────────────────────────────────────────────
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+rich>=13.0.0
