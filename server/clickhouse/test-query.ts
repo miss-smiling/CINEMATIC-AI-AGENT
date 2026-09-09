@@ -1,6 +1,6 @@
-import { findInvalidShotEntityLinks } from "./queries.ts";
+import { findDuplicateShotEntityLinks } from "./queries.ts";
 
-const invalidLinks = await findInvalidShotEntityLinks();
+const duplicates = await findDuplicateShotEntityLinks();
 
-console.log("Invalid shot-entity links:");
-console.log(invalidLinks);
+console.log("Duplicate shot-entity links:");
+console.log(duplicates);

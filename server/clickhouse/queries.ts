@@ -227,3 +227,22 @@ export async function findInvalidShotEntityLinks() {
 
   return await result.json();
 }
+
+export async function findDuplicateShotEntityLinks() {
+  const result = await clickhouse.query({
+    query: `
+      SELECT
+        shot_id,
+        entity_id,
+        role,
+        count() AS duplicate_count
+      FROM shot_entities
+      GROUP BY shot_id, entity_id, role
+      HAVING count() > 1
+      ORDER BY duplicate_count DESC
+    `,
+    format: "JSONEachRow",
+  });
+
+  return await result.json();
+}
